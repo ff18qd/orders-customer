@@ -27,7 +27,40 @@ var connection = mysql.createConnection({
     database : 'c9'   // change if not on Cloud9
 });
 
+app.set('view engine', 'ejs');
 
+var index = require('./routes/index');
+var users = require('./routes/users');
+
+var bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+var methodOverride = require('method-override');
+
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    var method = req.body._method
+    delete req.body._method
+    return method
+  }
+}));
+
+
+var flash = require('express-flash');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+
+app.use(cookieParser('keyboard cat'));
+app.use(session({ 
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 }
+}));
+app.use(flash());
 // connection.connect(function(err) {
 //   if (err) throw err;
 //   console.log("Connected!");
@@ -53,6 +86,10 @@ connection.connect(function(err) {
 app.get('/', function (req, res) {
   res.send("<h1>hello world</h1>");
 });
+
+
+app.use('/', index);
+app.use('/users', users);
 
 app.listen(8080, function () {
   console.log('Example app listening on port 8080!');
