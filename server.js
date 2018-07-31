@@ -7,10 +7,12 @@
 // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-LAMP.html
 // https://github.com/lcarbonaro/nodejs/blob/master/session27/server.js
 // http://text-analytics101.rxnlp.com/2013/11/how-to-install-mysql-on-amazon-ec2.html
+// https://stackoverflow.com/questions/17471334/nodejs-on-simple-sql-query-fetching-from-the-local-database-and-displaying-on-lo/17485877
 
 var express = require('express');
 var mysql = require('mysql');
 var app = express();
+var url = require('url');
 
 var dbHost = process.env.IP || 'localhost',
     // dbUser = process.env.C9_USER || 'root';
@@ -29,13 +31,22 @@ var connection = mysql.createConnection({
 //   console.log("Connected!");
 // });
 
+// connection.connect(function(err) {
+//   if (err) throw err;
+//   connection.query("SELECT * FROM Orders", function (err, result, fields) {
+//     if (err) throw err;
+//     console.log(result);
+//   });
+// });     
+
+// select by customer name
 connection.connect(function(err) {
   if (err) throw err;
-  connection.query("SELECT * FROM Orders", function (err, result, fields) {
+  connection.query("SELECT * FROM Orders WHERE CustomerName = 'Peter Lustig'; ", function (err, result, fields) {
     if (err) throw err;
     console.log(result);
   });
-});        
+}); 
         
 app.get('/', function (req, res) {
   res.send("<h1>hello world</h1>");
@@ -45,3 +56,5 @@ app.listen(8080, function () {
   console.log('Example app listening on port 8080!');
   //call this app from https://<workspace name>-<user name>.c9users.io
 });
+
+
