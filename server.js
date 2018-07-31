@@ -30,7 +30,7 @@ var connection = mysql.createConnection({
 app.set('view engine', 'ejs');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
+var orders = require('./routes/orders');
 
 var bodyParser = require('body-parser');
 
@@ -83,13 +83,17 @@ connection.connect(function(err) {
   });
 }); 
         
-app.get('/', function (req, res) {
-  res.send("<h1>hello world</h1>");
-});
+// app.get('/', function (req, res) {
+//   res.send("<h1>hello world</h1>");
+// });
 
+// app.get('/', function(req, res) {
+//     // render to views/index.ejs template file
+//     res.render('index', {title: 'My Node.js Application'})
+// })
 
 app.use('/', index);
-app.use('/users', users);
+app.use('/orders', orders);
 
 app.listen(8080, function () {
   console.log('Example app listening on port 8080!');
