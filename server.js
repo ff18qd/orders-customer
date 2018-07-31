@@ -1,6 +1,9 @@
 // https://medium.com/the-n00b-code-chronicles/how-to-deploy-a-node-js-web-app-using-express-in-cloud9-91e73910293f
 // config the MySQL in C9
-// use `sudo service mysqld start` to start MySQL server 
+// sudo chkconfig mysqld on
+// sudo service mysqld start
+// mysql -u root -p
+// use `sudo service mysqld start` to start MySQL DB server 
 // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-LAMP.html
 // https://github.com/lcarbonaro/nodejs/blob/master/session27/server.js
 // http://text-analytics101.rxnlp.com/2013/11/how-to-install-mysql-on-amazon-ec2.html
@@ -21,11 +24,18 @@ var connection = mysql.createConnection({
 });
 
 
+// connection.connect(function(err) {
+//   if (err) throw err;
+//   console.log("Connected!");
+// });
+
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("Connected!");
-});
-        
+  connection.query("SELECT * FROM Orders", function (err, result, fields) {
+    if (err) throw err;
+    console.log(result);
+  });
+});        
         
 app.get('/', function (req, res) {
   res.send("<h1>hello world</h1>");
