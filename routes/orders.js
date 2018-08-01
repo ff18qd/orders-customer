@@ -1,6 +1,85 @@
 var express = require('express')
 var app = express()
 
+// SELECT COUNT, ItemName
+// FROM Orders
+// GROUP BY ItemName
+// ORDER BY COUNT DESC;
+
+// SELECT *
+// FROM (SELECT COUNT(ItemName), ItemName
+//       FROM Orders
+    
+//       GROUP BY ItemName
+//       ORDER BY COUNT(ItemName) DESC;
+//       )
+// ORDER BY ItemName;
+
+app.get('/count', function(req, res, next) {
+    req.getConnection(function(error, conn) {
+        conn.query(`SELECT COUNT(ItemName), ItemName FROM Orders GROUP BY ItemName ORDER BY COUNT(ItemName) DESC, ItemName ASC;`,function(err, rows, fields) {
+            //if(err) throw err
+            if (err) {
+                req.flash('error', err)
+                res.render('order/count', {
+                    title: 'Orders List by Item Count', 
+                    data: ''
+                })
+            } else {
+                // render to views/order/count.ejs template file
+                res.render('order/count', {
+                    title: 'Orders List by Item Count ', 
+                    data: rows
+                })
+            }
+        })
+    })
+})
+
+
+app.get('/(:cusName)', function(req, res, next) {
+// app.get('\?name=(:cusName)', function(req, res, next) {	
+    req.getConnection(function(error, conn) {
+        conn.query(`SELECT * FROM Orders WHERE CustomerName = \'${req.params.cusName}\' ORDER BY OrderID ASC`,function(err, rows, fields) {
+            //if(err) throw err
+            if (err) {
+                req.flash('error', err)
+                res.render('order/list', {
+                    title: 'Orders List by ' + req.params.cusName, 
+                    data: ''
+                })
+            } else {
+                // render to views/order/list.ejs template file
+                res.render('order/list', {
+                    title: 'Orders List by ' + req.params.cusName, 
+                    data: rows
+                })
+            }
+        })
+    })
+})
+
+app.get('/address/(:address)', function(req, res, next) {
+    req.getConnection(function(error, conn) {
+        conn.query(`SELECT * FROM Orders WHERE CustomerAddress = \'${req.params.address}\' ORDER BY OrderID ASC`,function(err, rows, fields) {
+            //if(err) throw err
+            if (err) {
+                req.flash('error', err)
+                res.render('order/list', {
+                    title: 'Orders List by ' + req.params.address, 
+                    data: ''
+                })
+            } else {
+                // render to views/order/list.ejs template file
+                res.render('order/list', {
+                    title: 'Orders List by ' + req.params.address, 
+                    data: rows
+                })
+            }
+        })
+    })
+})
+
 app.get('/', function(req, res, next) {
     req.getConnection(function(error, conn) {
         conn.query('SELECT * FROM Orders ORDER BY OrderID ASC',function(err, rows, fields) {
@@ -251,6 +330,8 @@ app.delete('/delete/(:id)', function(req, res, next) {
         })
     })
 })
+ 
+ 
  
 
 module.exports = app;
