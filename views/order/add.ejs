@@ -1,0 +1,50 @@
+<!--
+including header content which is common for all pages
+-->
+<%- include ../layouts/header.ejs %>	
+
+<% if (messages.error) { %>
+	<p style="color:red"><%- messages.error %></p>
+<% } %>
+
+<% if (messages.success) { %>
+	<p style="color:green"><%- messages.success %></p>
+<% } %>
+
+<form action="/orders/add" method="post" name="form1">
+	<table width="25%" border="0">
+		<tr> 
+			<td>OrderID</td>
+			<td><input type="text" name="OrderID" id="OrderID" value="<%= OrderID %>" /></td>
+		</tr>
+		<tr> 
+			<td>Customer Name</td>
+			<td><input type="text" name="CustomerName" value="<%= CustomerName %>" /></td>
+		</tr>
+		<tr> 
+			<td>Customer Address</td>
+			<td><input type="text" name="CustomerAddress" value="<%= CustomerAddress %>" /></td>
+		</tr>
+		<tr> 
+			<td>Item Name</td>
+			<td><input type="text" name="ItemName" value="<%= ItemName %>" /></td>
+		</tr>
+		<tr> 
+			<td>Price</td>
+			<td><input type="text" name="Price" value="<%= Price %>" /></td>
+		</tr>
+		<tr> 
+			<td>Currency</td>
+			<td><input type="text" name="Currency" value="<%= Currency %>" /></td>
+		</tr>
+		<tr> 
+			<td></td>
+			<td><input type="submit" name="Submit" value="Add" /></td>
+		</tr>
+	</table>
+</form>
+
+<!--
+including footer content which is common for all pages
+-->
+<%- include ../layouts/footer.ejs %>

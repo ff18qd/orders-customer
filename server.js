@@ -16,21 +16,53 @@ var mysql = require('mysql');
 var app = express();
 var url = require('url');
 
-var dbHost = process.env.IP || 'localhost',
-    // dbUser = process.env.C9_USER || 'root';
-     dbUser = 'root'
+/**
+ * This middleware provides a consistent API 
+ * for MySQL connections during request/response life cycle
+ */ 
+var myConnection  = require('express-myconnection')
+/**
+ * Store database credentials in a separate config.js file
+ * Load the file/module and its values
+ */ 
+var config = require('./config')
+var dbOptions = {
+	host:	  config.database.host,
+	user: 	  config.database.user,
+	password: config.database.password,
+	port: 	  config.database.port, 
+	database: config.database.db
+}
+/**
+ * 3 strategies can be used
+ * single: Creates single database connection which is never closed.
+ * pool: Creates pool of connections. Connection is auto release when response ends.
+ * request: Creates new connection per new request. Connection is auto close when response ends.
+ */ 
+app.use(myConnection(mysql, dbOptions, 'pool'))
 
-var connection = mysql.createConnection({
-    host     : dbHost,
-    user     : dbUser,
-    password : 'password123^^',
-    database : 'c9'   // change if not on Cloud9
-});
+
+// var dbHost = process.env.IP || 'localhost',
+//     // dbUser = process.env.C9_USER || 'root';
+//     dbUser = 'root'
+
+// var connection = mysql.createConnection({
+//     host     : dbHost,
+//     user     : dbUser,
+//     password : 'password123^^',
+//     database : 'c9'   // change if not on Cloud9
+// });
 
 app.set('view engine', 'ejs');
 
 var index = require('./routes/index');
 var orders = require('./routes/orders');
+
+/**
+ * Express Validator Middleware for Form Validation
+ */ 
+var expressValidator = require('express-validator')
+app.use(expressValidator());
 
 var bodyParser = require('body-parser');
 
@@ -75,13 +107,13 @@ app.use(flash());
 // });     
 
 // select by customer name
-connection.connect(function(err) {
-  if (err) throw err;
-  connection.query("SELECT * FROM Orders WHERE CustomerName = 'Peter Lustig'; ", function (err, result, fields) {
-    if (err) throw err;
-    console.log(result);
-  });
-}); 
+// connection.connect(function(err) {
+//   if (err) throw err;
+//   connection.query("SELECT * FROM Orders WHERE CustomerName = 'Peter Lustig'; ", function (err, result, fields) {
+//     if (err) throw err;
+//     console.log(result);
+//   });
+// }); 
         
 // app.get('/', function (req, res) {
 //   res.send("<h1>hello world</h1>");
@@ -94,6 +126,8 @@ connection.connect(function(err) {
 
 app.use('/', index);
 app.use('/orders', orders);
+
+
 
 app.listen(8080, function () {
   console.log('Example app listening on port 8080!');
