@@ -120,4 +120,24 @@ app.put('/edit/(:name)', function(req, res, next) {
 
 // UPDATE Orders SET CustomerName = 'Peter Lustig', CustomerAddress="100 broadway"  WHERE CustomerName='Peetee Lucus';
 
+// DELETE Customer
+app.delete('/delete/(:name)', function(req, res, next) {
+    var order = { CustomerName: req.params.name }
+    
+    req.getConnection(function(error, conn) {
+        conn.query(`DELETE FROM Orders WHERE CustomerName = \'${req.params.name}\'`, function(err, result) {
+            //if(err) throw err
+            if (err) {
+                req.flash('error', err)
+                // redirect to users list page
+                res.redirect('/customers')
+            } else {
+                req.flash('success', 'Customer is deleted successfully! Customer Name = ' + req.params.name)
+                // redirect to users list page
+                res.redirect('/customers')
+            }
+        })
+    })
+})
+
 module.exports = app;
