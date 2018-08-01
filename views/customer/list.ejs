@@ -31,8 +31,15 @@ including header content which is common for all pages
 			
 			<td><%= order.CustomerName %></td>
 			<td><%= order.CustomerAddress %></td>
-			
-			
+			<td>
+				<div style="float:left">
+					<a href='/customers/edit/<%= order.CustomerName %>'>Edit</a> &nbsp;							
+					<form method="post" action="/customers/delete/<%= order.CustomerName %>" style="float:right">
+						<input type="submit" name="delete" value='Delete' onClick="return confirm('Are you sure you want to delete?')" />
+						<input type="hidden" name="_method" value="DELETE" />
+					</form>
+				</div>
+			</td>
 		</tr>
 	<% }) %>
 	<% } %>
