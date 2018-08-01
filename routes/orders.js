@@ -37,8 +37,7 @@ app.get('/count', function(req, res, next) {
 })
 
 
-app.get('/(:cusName)', function(req, res, next) {
-// app.get('\?name=(:cusName)', function(req, res, next) {	
+app.get('/customer/(:cusName)', function(req, res, next) {
     req.getConnection(function(error, conn) {
         conn.query(`SELECT * FROM Orders WHERE CustomerName = \'${req.params.cusName}\' ORDER BY OrderID ASC`,function(err, rows, fields) {
             //if(err) throw err
@@ -59,26 +58,7 @@ app.get('/(:cusName)', function(req, res, next) {
     })
 })
 
-app.get('/address/(:address)', function(req, res, next) {
-    req.getConnection(function(error, conn) {
-        conn.query(`SELECT * FROM Orders WHERE CustomerAddress = \'${req.params.address}\' ORDER BY OrderID ASC`,function(err, rows, fields) {
-            //if(err) throw err
-            if (err) {
-                req.flash('error', err)
-                res.render('order/list', {
-                    title: 'Orders List by ' + req.params.address, 
-                    data: ''
-                })
-            } else {
-                // render to views/order/list.ejs template file
-                res.render('order/list', {
-                    title: 'Orders List by ' + req.params.address, 
-                    data: rows
-                })
-            }
-        })
-    })
-})
+
 
 app.get('/', function(req, res, next) {
     req.getConnection(function(error, conn) {
@@ -197,6 +177,27 @@ app.post('/add', function(req, res, next){
             Currency:req.body.Currency
         })
     }
+})
+
+app.get('/address/(:address)', function(req, res, next) {
+    req.getConnection(function(error, conn) {
+        conn.query(`SELECT * FROM Orders WHERE CustomerAddress = \'${req.params.address}\' ORDER BY OrderID ASC`,function(err, rows, fields) {
+            //if(err) throw err
+            if (err) {
+                req.flash('error', err)
+                res.render('order/list', {
+                    title: 'Orders List by ' + req.params.address, 
+                    data: ''
+                })
+            } else {
+                // render to views/order/list.ejs template file
+                res.render('order/list', {
+                    title: 'Orders List by ' + req.params.address, 
+                    data: rows
+                })
+            }
+        })
+    })
 })
 
 //Show edit order form

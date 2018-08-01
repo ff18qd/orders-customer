@@ -57,6 +57,7 @@ app.set('view engine', 'ejs');
 
 var index = require('./routes/index');
 var orders = require('./routes/orders');
+var customers = require('./routes/customers')
 
 
 /**
@@ -127,6 +128,7 @@ app.use(flash());
 
 app.use('/', index);
 app.use('/orders', orders);
+app.use('/customers', customers);
 
 
 
