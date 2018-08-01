@@ -232,4 +232,25 @@ app.put('/edit/(:id)', function(req, res, next) {
     }
 })
 
+// DELETE Order
+app.delete('/delete/(:id)', function(req, res, next) {
+    var order = { OrderID: req.params.id }
+    
+    req.getConnection(function(error, conn) {
+        conn.query('DELETE FROM Orders WHERE OrderID = ' + req.params.id, order, function(err, result) {
+            //if(err) throw err
+            if (err) {
+                req.flash('error', err)
+                // redirect to users list page
+                res.redirect('/orders')
+            } else {
+                req.flash('success', 'Order is deleted successfully! OrderID = ' + req.params.id)
+                // redirect to users list page
+                res.redirect('/orders')
+            }
+        })
+    })
+})
+ 
+
 module.exports = app;
