@@ -1,20 +1,6 @@
 var express = require('express')
 var app = express()
 
-// SELECT COUNT, ItemName
-// FROM Orders
-// GROUP BY ItemName
-// ORDER BY COUNT DESC;
-
-// SELECT *
-// FROM (SELECT COUNT(ItemName), ItemName
-//       FROM Orders
-    
-//       GROUP BY ItemName
-//       ORDER BY COUNT(ItemName) DESC;
-//       )
-// ORDER BY ItemName;
-
 app.get('/count', function(req, res, next) {
     req.getConnection(function(error, conn) {
         conn.query(`SELECT COUNT(ItemName), ItemName FROM Orders GROUP BY ItemName ORDER BY COUNT(ItemName) DESC, ItemName ASC;`,function(err, rows, fields) {
