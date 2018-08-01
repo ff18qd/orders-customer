@@ -120,5 +120,116 @@ app.post('/add', function(req, res, next){
     }
 })
 
+//Show edit order form
+app.get('/edit/(:id)', function(req, res, next){
+    req.getConnection(function(error, conn) {
+        conn.query('SELECT * FROM Orders WHERE OrderID = ' + req.params.id, function(err, rows, fields) {
+            if(err) throw err
+            
+            // if user not found
+            if (rows.length <= 0) {
+                req.flash('error', 'Order not found with OrderID = ' + req.params.id)
+                res.redirect('/orders')
+            }
+            else { // if user found
+                // render to views/user/edit.ejs template file
+                res.render('order/edit', {
+                    title: 'Edit Order', 
+                    //data: rows[0],
+                    OrderID: rows[0].OrderID,
+                    CustomerName: rows[0].CustomerName,
+                    CustomerAddress: rows[0].CustomerAddress,
+                    ItemName: rows[0].ItemName,
+                    Price: rows[0].Price,
+                    Currency: rows[0].Currency
+                })
+            }            
+        })
+    })
+})
+
+// EDIT Order POST ACTION
+app.put('/edit/(:id)', function(req, res, next) {
+	req.assert('OrderID', 'OrderID is required').notEmpty()           //Validate name
+	req.assert('CustomerName', 'Customer name is required').notEmpty()             //Validate Customer Name
+    req.assert('CustomerAddress', 'A valid address is required').notEmpty()  //Validate customer address
+
+    var errors = req.validationErrors()
+    
+    if( !errors ) {   //No errors were found.  Passed Validation!
+		
+		/********************************************
+		 * Express-validator module
+		 
+		req.body.comment = 'a <span>comment</span>';
+		req.body.username = '   a user    ';
+		req.sanitize('comment').escape(); // returns 'a &lt;span&gt;comment&lt;/span&gt;'
+		req.sanitize('username').trim(); // returns 'a user'
+		********************************************/
+		var order = {
+		    OrderID: req.sanitize('OrderID').escape().trim(),
+			CustomerName: req.sanitize('CustomerName').escape().trim(),
+			CustomerAddress: req.sanitize('CustomerAddress').escape().trim(),
+			ItemName: req.sanitize('ItemName').escape().trim(),
+			Price: req.sanitize('Price').escape().trim(),
+			Currency: req.sanitize('Currency').escape().trim()
+		}
+		
+		
+		req.getConnection(function(error, conn) {
+			conn.query('UPDATE Orders SET ? WHERE OrderID = ' + req.params.id, order, function(err, result) {
+				//if(err) throw err
+				if (err) {
+					req.flash('error', err)
+					
+					// render to views/order/add.ejs
+					res.render('order/edit', {
+						title: 'Edit Order',
+						OrderID: req.params.OrderID,
+						CustomerName: req.params.CustomerName,
+						CustomerAddress: req.body.CustomerAddress,
+						ItemName: req.body.ItemName,
+						Price: req.body.Price,
+						Currency: req.body.Currency
+					})
+				} else {
+					req.flash('success', 'Data updated successfully!')
+					
+					// render to views/order/add.ejs
+					res.render('order/edit', {
+						title: 'Edit Order',
+						OrderID: req.params.OrderID,
+						CustomerName: req.params.CustomerName,
+						CustomerAddress: req.body.CustomerAddress,
+						ItemName: req.body.ItemName,
+						Price: req.body.Price,
+						Currency: req.body.Currency
+					})
+				}
+			})
+		})
+	}
+	else {   //Display errors to user
+		var error_msg = ''
+		errors.forEach(function(error) {
+			error_msg += error.msg + '<br>'
+		})
+		req.flash('error', error_msg)
+		
+		/**
+		 * Using req.body.name 
+		 * because req.param('name') is deprecated
+		 */ 
+        res.render('user/edit', { 
+            title: 'Edit User',            
+			OrderID: req.body.OrderID,
+            CustomerName: req.body.CustomerName,
+            CustomerAddress: req.body.CustomerAddress,
+            ItemName: req.body.ItemName,
+            Price:req.body.Price,
+            Currency:req.body.Currency
+        })
+    }
+})
 
 module.exports = app;
