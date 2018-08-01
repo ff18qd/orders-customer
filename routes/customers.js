@@ -50,5 +50,74 @@ app.get('/edit/(:name)', function(req, res, next){
     })
 })
 
+// EDIT Order POST ACTION
+app.put('/edit/(:name)', function(req, res, next) {
+	req.assert('CustomerName', 'Customer name is required').notEmpty()             //Validate Customer Name
+    req.assert('CustomerAddress', 'A valid address is required').notEmpty()  //Validate customer address
+
+    var errors = req.validationErrors()
+    
+    if( !errors ) {   //No errors were found.  Passed Validation!
+		
+		/********************************************
+		 * Express-validator module
+		 
+		req.body.comment = 'a <span>comment</span>';
+		req.body.username = '   a user    ';
+		req.sanitize('comment').escape(); // returns 'a &lt;span&gt;comment&lt;/span&gt;'
+		req.sanitize('username').trim(); // returns 'a user'
+		********************************************/
+		var customerUpdated = {
+			CustomerName: req.sanitize('CustomerName').escape().trim(),
+			CustomerAddress: req.sanitize('CustomerAddress').escape().trim(),
+		}
+		
+		
+		req.getConnection(function(error, conn) {
+			conn.query(`UPDATE Orders SET CustomerName = \'${customerUpdated.CustomerName}\', CustomerAddress = \'${customerUpdated.CustomerAddress}\' WHERE CustomerName = \'${req.params.name}\'`, customerUpdated, function(err, result) {
+				//if(err) throw err
+				if (err) {
+					req.flash('error', err)
+					
+					// render to views/order/add.ejs
+					res.render('customer/edit', {
+						title: 'Edit Customer Info',
+						CustomerName: req.params.CustomerName,
+						CustomerAddress: req.body.CustomerAddress,
+					
+					})
+				} else {
+					req.flash('success', 'Data updated successfully!')
+					
+					// render to views/customer/add.ejs
+					res.render('customer/edit', {
+						title: 'Edit Customer Info',
+						CustomerName: req.params.CustomerName,
+						CustomerAddress: req.body.CustomerAddress
+					})
+				}
+			})
+		})
+	}
+	else {   //Display errors to user
+		var error_msg = ''
+		errors.forEach(function(error) {
+			error_msg += error.msg + '<br>'
+		})
+		req.flash('error', error_msg)
+		
+		/**
+		 * Using req.body.name 
+		 * because req.param('name') is deprecated
+		 */ 
+        res.render('customer/edit', { 
+            title: 'Edit Customer',            
+            CustomerName: req.body.CustomerName,
+            CustomerAddress: req.body.CustomerAddress,
+        })
+    }
+})
+
+// UPDATE Orders SET CustomerName = 'Peter Lustig', CustomerAddress="100 broadway"  WHERE CustomerName='Peetee Lucus';
 
 module.exports = app;
