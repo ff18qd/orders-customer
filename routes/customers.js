@@ -21,6 +21,48 @@ app.get('/sum/(:name)', function(req, res, next) {
         })
     })
 })
+
+app.get('/item/(:itemName)', function(req, res, next) {
+    req.getConnection(function(error, conn) {
+        conn.query(`select CustomerName, ItemName from Orders where ItemName = \'${req.params.itemName}\'`, req.params.itemName, function(err, rows, fields) {
+            //if(err) throw err
+            if (err) {
+                req.flash('error', err)
+                res.render('customer/item', {
+                    title: 'Customers List By ' + req.params.itemName, 
+                    data: ''
+                })
+            } else {
+                // render to views/customer/sum.ejs template file
+                res.render('customer/item', {
+                    title: 'Customers List By ' + req.params.itemName,  
+                    data: rows
+                })
+            }
+        })
+    })
+})
+
+app.get('/order/(:cusName)', function(req, res, next) {
+    req.getConnection(function(error, conn) {
+        conn.query(`select CustomerName, OrderID, ItemName from Orders where CustomerName = \'${req.params.cusName}\'`, req.params.cusName, function(err, rows, fields) {
+            //if(err) throw err
+            if (err) {
+                req.flash('error', err)
+                res.render('customer/order', {
+                    title: req.params.cusName + ' Orders', 
+                    data: ''
+                })
+            } else {
+                // render to views/customer/sum.ejs template file
+                res.render('customer/order', {
+                    title: req.params.cusName  + ' Orders',  
+                    data: rows
+                })
+            }
+        })
+    })
+})
  
 app.get('/', function(req, res, next) {
     req.getConnection(function(error, conn) {
