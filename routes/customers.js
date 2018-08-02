@@ -33,7 +33,7 @@ app.get('/item/(:itemName)', function(req, res, next) {
                     data: ''
                 })
             } else {
-                // render to views/customer/sum.ejs template file
+                // render to views/customer/item.ejs template file
                 res.render('customer/item', {
                     title: 'Customers List By ' + req.params.itemName,  
                     data: rows
@@ -54,7 +54,7 @@ app.get('/order/(:cusName)', function(req, res, next) {
                     data: ''
                 })
             } else {
-                // render to views/customer/sum.ejs template file
+                // render to views/customer/order.ejs template file
                 res.render('customer/order', {
                     title: req.params.cusName  + ' Orders',  
                     data: rows
@@ -75,7 +75,7 @@ app.get('/', function(req, res, next) {
                     data: ''
                 })
             } else {
-                // render to views/order/list.ejs template file
+                // render to views/customer/list.ejs template file
                 res.render('customer/list', {
                     title: 'Customers List', 
                     data: rows
@@ -97,16 +97,12 @@ app.get('/edit/(:name)', function(req, res, next){
                 res.redirect('/customers')
             }
             else { // if user found
-                // render to views/user/edit.ejs template file
+                // render to views/customer/edit.ejs template file
                 res.render('customer/edit', {
                     title: 'Edit Customer', 
-                    //data: rows[0],
-                    // OrderID: rows[0].OrderID,
                     CustomerName: rows[0].CustomerName,
                     CustomerAddress: rows[0].CustomerAddress,
-                    // ItemName: rows[0].ItemName,
-                    // Price: rows[0].Price,
-                    // Currency: rows[0].Currency
+                
                 })
             }            
         })
@@ -142,7 +138,7 @@ app.put('/edit/(:name)', function(req, res, next) {
 				if (err) {
 					req.flash('error', err)
 					
-					// render to views/order/add.ejs
+					// render to views/customer/edit.ejs
 					res.render('customer/edit', {
 						title: 'Edit Customer Info',
 						CustomerName: req.params.CustomerName,
@@ -152,10 +148,10 @@ app.put('/edit/(:name)', function(req, res, next) {
 				} else {
 					req.flash('success', 'Data updated successfully!')
 					
-					// render to views/customer/add.ejs
+					// render to views/customer/edit.ejs
 					res.render('customer/edit', {
 						title: 'Edit Customer Info',
-						CustomerName: req.params.CustomerName,
+						CustomerName: req.body.CustomerName,
 						CustomerAddress: req.body.CustomerAddress
 					})
 				}

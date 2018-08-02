@@ -264,8 +264,8 @@ app.put('/edit/(:id)', function(req, res, next) {
 					// render to views/order/add.ejs
 					res.render('order/edit', {
 						title: 'Edit Order',
-						OrderID: req.params.OrderID,
-						CustomerName: req.params.CustomerName,
+						OrderID: req.body.OrderID,
+						CustomerName: req.body.CustomerName,
 						CustomerAddress: req.body.CustomerAddress,
 						ItemName: req.body.ItemName,
 						Price: req.body.Price,
