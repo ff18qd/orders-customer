@@ -1,6 +1,27 @@
 var express = require('express')
 var app = express()
  
+app.get('/sum/(:name)', function(req, res, next) {
+    req.getConnection(function(error, conn) {
+        conn.query(`select CustomerName, Sum(Price) AS Sum, Currency from Orders where CustomerName = \'${req.params.name}\' GROUP BY Currency`, req.params.name, function(err, rows, fields) {
+            //if(err) throw err
+            if (err) {
+                req.flash('error', err)
+                res.render('customer/sum', {
+                    title: 'Total money Spent by ' + req.params.name, 
+                    data: ''
+                })
+            } else {
+                // render to views/customer/sum.ejs template file
+                res.render('customer/sum', {
+                    title: 'Total money Spent by ' + req.params.name, 
+                    data: rows
+                })
+            }
+        })
+    })
+})
+ 
 app.get('/', function(req, res, next) {
     req.getConnection(function(error, conn) {
         conn.query('SELECT DISTINCT CustomerName, CustomerAddress FROM Orders ORDER BY CustomerName ASC',function(err, rows, fields) {
